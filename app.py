@@ -16,7 +16,6 @@ client = MongoClient('mongodb+srv://shouryagarg2012:XGxOxzFRFHp87Kpe@cluster0.zy
 db = client['user_data']
 collection = db['user_data']
 
-headers = {"Authorization": "Bearer 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"}
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
