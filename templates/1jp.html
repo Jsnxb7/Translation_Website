@@ -1,0 +1,192 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.1.3/webcomponents-loader.js"></script>
+    <script src="https://unpkg.com/resize-observer-polyfill@1.5.0/dist/ResizeObserver.js"></script>
+    <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='scriptjp.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='2.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleguide.css') }}" />
+
+
+  </head>
+
+  <body>
+<video class="video-background" autoplay loop muted playsinline>
+  <source src="{{ url_for('static', filename='img/stars.mp4') }}" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+
+    <!-- Left Sidebar -->
+    <div class="sidebar" id="sidebar">
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <div class="content">
+            <div class="LOGO">
+        <div class="div">
+          <div class="logo"><div class="all-in-one-social">Truble</div></div>
+          <img class="network" src="static/img/logo.png" />
+        </div>
+      </div>
+      <button><img src="static/img/conv.png" />Text</button>
+      <button><img src="static/img/usg.png" />Image</button>
+      <button><img src="static/img/dash.png" />Speech</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+      <!-- Live NLP Mode Indicator -->
+<div class="nlp-widget">
+  <h3>Live NLP Status</h3>
+
+  <div class="nlp-item">
+    <span class="label">🌐 Translation</span>
+    <span class="value" id="mode-translation">EN → JA</span>
+  </div>
+
+  <div class="nlp-item">
+    <span class="label">🎤 Speech Input</span>
+    <span class="value" id="mode-speech">OFF</span>
+  </div>
+
+  <div class="nlp-item">
+    <span class="label">🔊 Text to Speech</span>
+    <span class="value" id="mode-tts">Japanese</span>
+  </div>
+
+  <div class="nlp-item">
+    <span class="label">🧠 NLP Model</span>
+    <span class="value" id="mode-model">XLM-R / Marian</span>
+  </div>
+
+  <div class="nlp-item">
+    <span class="label">📦 Pipeline</span>
+    <span class="value active" id="mode-pipeline">Idle</span>
+  </div>
+</div>
+
+      <!-- Logo and Branding -->
+
+      <!-- Profile Dropdown -->
+      <div class="profile">
+        <button id="profilebutton" class="tbb1"></button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item"><a href="{{ url_for('profile', name=name, post=post) }}" class="dropdown-link">Account</a></li>
+          <li class="dropdown-item"><a href="{{ url_for('login') }}" class="dropdown-link">Logout</a></li>
+        </ul>
+        <div class="overlap-group-2">
+          <div class="text-wrapper-2">{{ name }}</div>
+          <div class="text-wrapper-3">{{ post }}</div>
+          <input type="hidden" id="name" value="{{ name }}">
+          <input type="hidden" id="post" value="{{ post }}">
+        </div>
+      </div>
+
+  <!-- Message Display Area -->
+<div id="chat-area">
+  <div class="msg assistant">Hello! How can I help you today?</div>
+  <!-- more .msg elements will be added here dynamically -->
+</div>
+
+<div class="input-bar">
+  <div class="input-wrapper">
+    <input type="text" id="message-input" placeholder="Type a message..." />
+    <button class="send-button" onclick="translat()"></button>
+  </div>
+</div>
+
+
+
+    <!-- Right Chat Sidebar
+    <div class="chat-sidebar" id="chatSidebar">
+      <button onclick="toggleChatSidebar()">☰ Chat</button>
+      <div class="chat-container" id="chat-container">
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg">Hello from sidebar!</div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Scripts -->
+    <script>
+      
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("collapsed");
+        document.getElementById("main-content").classList.toggle("collapsed");
+      }
+
+      function toggleChatSidebar() {
+        document.getElementById("chatSidebar").classList.toggle("collapsed");
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const button = document.getElementById('profilebutton');
+        const dropdown = document.querySelector('.dropdown-menu');
+        const subDropdowns = document.querySelectorAll('.sub-dropdown-menu');
+
+        button.addEventListener('mouseover', function () {
+          dropdown.style.display = 'block';
+        });
+
+        button.addEventListener('mouseout', function () {
+          setTimeout(function () {
+            if (!dropdown.matches(':hover')) {
+              dropdown.style.display = 'none';
+            }
+          }, 200);
+        });
+
+        dropdown.addEventListener('mouseleave', function () {
+          dropdown.style.display = 'none';
+        });
+
+        dropdown.addEventListener('mouseenter', function () {
+          dropdown.style.display = 'block';
+        });
+
+        subDropdowns.forEach(function (subDropdown) {
+          const parentItem = subDropdown.parentElement;
+
+          parentItem.addEventListener('mouseover', function () {
+            subDropdown.style.display = 'block';
+          });
+
+          parentItem.addEventListener('mouseout', function () {
+            setTimeout(function () {
+              if (!subDropdown.matches(':hover')) {
+                subDropdown.style.display = 'none';
+              }
+            }, 200);
+          });
+
+          subDropdown.addEventListener('mouseleave', function () {
+            subDropdown.style.display = 'none';
+          });
+
+          subDropdown.addEventListener('mouseenter', function () {
+            subDropdown.style.display = 'block';
+          });
+        });
+      });
+
+      // Optional: Keep audio-controls properly aligned (if still needed)
+      function updateButtonPosition() {
+        const contentDiv = document.getElementById('message-bubble');
+        const followButton = document.getElementById('audio-controls');
+        if (followButton && contentDiv) {
+          const rect = contentDiv.getBoundingClientRect();
+          followButton.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+          followButton.style.left = rect.left + 'px';
+        }
+      }
+
+      window.addEventListener('scroll', updateButtonPosition);
+      window.addEventListener('resize', updateButtonPosition);
+      window.addEventListener('load', updateButtonPosition);
+    </script>
+  </body>
+
+  </html>
