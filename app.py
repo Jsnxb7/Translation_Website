@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from faster_whisper import WhisperModel
 
 app = Flask(__name__)
 
@@ -16,6 +17,14 @@ client = MongoClient('mongodb+srv://shouryagarg2012:XGxOxzFRFHp87Kpe@cluster0.zy
 db = client['user_data']
 collection = db['user_data']
 
+# Load Faster Whisper model once
+model_size = "base"   # options: tiny, base, small, medium, large-v3
+
+whisper_model = WhisperModel(
+    model_size,
+    device="cpu",      # change to "cuda" if GPU available
+    compute_type="int8"  # int8 for CPU (faster)
+)
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -106,6 +115,48 @@ def update():
     user_specific_collection.insert_one(initial_data)
     
     return redirect(url_for('login'))
+
+@app.route('/recordhi')
+def recordhi():
+    name = request.args.get('name')
+    post = request.args.get('post')
+    return render_template('recordhi.html', name=name, post=post)
+
+@app.route('/recordjp')
+def recordjp():
+    name = request.args.get('name')
+    post = request.args.get('post')
+    return render_template('recordjp.html', name=name, post=post)
+
+@app.route('/upload_audio', methods=['POST'])
+def upload_audio():
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file'}), 400
+
+    audio_file = request.files['audio']
+
+    save_path = os.path.join("static", "input.wav")
+    audio_file.save(save_path)
+
+    print("Audio saved at:", save_path)
+
+    # 🔥 Transcribe using Faster Whisper
+    segments, info = whisper_model.transcribe(
+        save_path,
+        beam_size=5
+    )
+
+    full_text = ""
+    for segment in segments:
+        full_text += segment.text + " "
+
+    print("Detected language:", info.language)
+    print("Transcription:", full_text)
+
+    return jsonify({
+        "transcription": full_text.strip(),
+        "language": info.language
+    }), 200
 
 @app.route('/signup')
 def sign_up():

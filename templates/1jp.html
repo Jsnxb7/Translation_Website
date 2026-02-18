@@ -32,7 +32,19 @@
       </div>
       <button><img src="static/img/conv.png" />Text</button>
       <button><img src="static/img/usg.png" />Image</button>
-      <button><img src="static/img/dash.png" />Speech</button>
+      <button onclick="goToRecord()">
+          <img src="{{ url_for('static', filename='img/dash.png') }}" />
+          Speech
+      </button>
+
+<script>
+function goToRecord() {
+    const name = "{{ name }}";
+    const post = "{{ post }}";
+
+    window.location.href = `/recordjp?name=${name}&post=${post}`;
+}
+</script>
       </div>
     </div>
 

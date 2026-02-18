@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="stylesheet" href="{{ url_for('static', filename='2.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='styleguide.css') }}" />
+
+<title>Speech Mode</title>
+</head>
+
+<body>
+
+<!-- 🌌 Background -->
+<video class="video-background" autoplay loop muted playsinline>
+  <source src="{{ url_for('static', filename='img/stars.mp4') }}" type="video/mp4">
+</video>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="content">
+
+        <div class="LOGO">
+            <div class="div">
+                <div class="logo">
+                    <div class="all-in-one-social">Truble</div>
+                </div>
+                <img class="network" src="{{ url_for('static', filename='img/logo.png') }}" />
+            </div>
+        </div>
+
+        <button onclick="window.location.href='/'">
+            <img src="{{ url_for('Japanese', name=name, post=post, collectionname=collectionname) }}" />Text
+        </button>
+              <button><img src="static/img/usg.png" />Image</button>
+
+
+        <button class="active">
+            <img src="{{ url_for('static', filename='img/dash.png') }}" />
+            Speech
+        </button>
+
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+
+    <!-- NLP Status -->
+    <div class="nlp-widget">
+        <h3>Live NLP Status</h3>
+
+        <div class="nlp-item">
+            <span class="label">🌐 Translation</span>
+            <span class="value">EN → JP</span>
+        </div>
+
+        <div class="nlp-item">
+            <span class="label">🎤 Speech Input</span>
+            <span class="value" id="mode-speech">OFF</span>
+        </div>
+
+        <div class="nlp-item">
+            <span class="label">📦 Pipeline</span>
+            <span class="value active" id="mode-pipeline">Idle</span>
+        </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile">
+        <div class="overlap-group-2">
+            <div class="text-wrapper-2">{{ name }}</div>
+            <div class="text-wrapper-3">{{ post }}</div>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chat-area">
+        <div class="msg assistant">🎙 Tap the microphone to start speaking.</div>
+    </div>
+    
+    <!-- 🎤 Floating Toggle Speech Button -->
+<button id="speechToggle" class="speech-btn" onclick="toggleRecording()">
+    🎙
+</button>
+
+</div>
+
+
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+    document.getElementById("main-content").classList.toggle("collapsed");
+}
+
+async function toggleRecording() {
+
+    if (!isRecording) {
+
+        document.getElementById("mode-speech").innerText = "ON";
+        document.getElementById("mode-pipeline").innerText = "Recording";
+        document.getElementById("speechToggle").innerText = "⏹";
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.start();
+        isRecording = true;
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+    } else {
+
+        mediaRecorder.stop();
+        isRecording = false;
+
+        document.getElementById("speechToggle").innerText = "🎙";
+        document.getElementById("mode-pipeline").innerText = "Transcribing";
+
+        mediaRecorder.onstop = async () => {
+
+            const blob = new Blob(audioChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append("audio", blob);
+
+            const response = await fetch("/upload_audio", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            addMessage("user", result.transcription);
+
+            document.getElementById("mode-pipeline").innerText = "Translating";
+
+            const translateResponse = await fetch("/translatjp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: "{{ name }}",
+                    post: "{{ post }}",
+                    text: result.transcription
+                })
+            });
+
+            const translated = await translateResponse.json();
+
+            addMessage("assistant", translated.translated_text);
+
+            document.getElementById("mode-pipeline").innerText = "Complete";
+            document.getElementById("mode-speech").innerText = "OFF";
+        };
+    }
+}
+
+function addMessage(role, text) {
+    const chat = document.getElementById("chat-area");
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    div.innerText = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>

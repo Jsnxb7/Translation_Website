@@ -808,3 +808,24 @@ body {
 .audio-controls audio {
   margin-left: 40px; /* Leave space for the button */
 }
+
+.speech-btn {
+    position: relative;
+    bottom: 40px;
+    left: 250px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    font-size: 28px;
+    border: none;
+    background: #6c63ff;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    transition: 0.3s ease;
+}
+
+.speech-btn:hover {
+    transform: scale(1.1);
+    background: #5848ff;
+}
