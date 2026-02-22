@@ -31,11 +31,17 @@
             </div>
         </div>
 
-        <button onclick="window.location.href='/'">
-            <img src="{{ url_for('Japanese', name=name, post=post, collectionname=collectionname) }}" />Text
-        </button>
-              <button><img src="static/img/usg.png" />Image</button>
+<a href="{{ url_for('Japanese', name=name, post=post, unique_id=unique_id) }}">
+    <button>
+        <img src="{{ url_for('static', filename='img/usg.png') }}" />
+        Text (Japanese)
+    </button>
+</a>
 
+<button onclick="window.location.href='/image_jp?name={{name}}&post={{post}}'">
+    <img src="{{ url_for('static', filename='img/usg.png') }}" />
+    Image (Japanese)
+</button>
 
         <button class="active">
             <img src="{{ url_for('static', filename='img/dash.png') }}" />
@@ -59,7 +65,7 @@
 
         <div class="nlp-item">
             <span class="label">🎤 Speech Input</span>
-            <span class="value" id="mode-speech">OFF</span>
+            <span class="value" id="mode-speech">ON</span>
         </div>
 
         <div class="nlp-item">
@@ -91,6 +97,13 @@
 
 
 <script>
+    function goToImage() {
+    const name = "{{ name }}";
+    const post = "{{ post }}";
+
+    window.location.href = `/image?name=${encodeURIComponent(name)}&post=${encodeURIComponent(post)}`;
+}
+
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
@@ -131,25 +144,39 @@ async function toggleRecording() {
             const formData = new FormData();
             formData.append("audio", blob);
 
-            const response = await fetch("/upload_audio", {
-                method: "POST",
-                body: formData
-            });
+const response = await fetch("/upload_audio", {
+    method: "POST",
+    body: formData
+});
 
-            const result = await response.json();
+console.log("Status:", response.status);
 
-            addMessage("user", result.transcription);
+let result;
+
+try {
+    result = await response.json();
+    console.log("Result JSON:", result);
+} catch (err) {
+    console.error("JSON parse error:", err);
+    addMessage("assistant", "Server returned invalid response.");
+    return;
+}
+
+if (!result.transcription) {
+    addMessage("assistant", "⚠ No speech detected.");
+    return;
+}
+
+addMessage("user", result.transcription);
 
             document.getElementById("mode-pipeline").innerText = "Translating";
 
-            const translateResponse = await fetch("/translatjp", {
+const translateResponse = await fetch("{{ url_for('translatjp') }}", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: "{{ name }}",
-                    post: "{{ post }}",
-                    text: result.transcription
-                })
+                    body: JSON.stringify({
+        text: result.transcription
+    })
             });
 
             const translated = await translateResponse.json();

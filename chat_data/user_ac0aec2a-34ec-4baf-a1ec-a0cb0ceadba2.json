@@ -1,0 +1,44 @@
+[
+    {
+        "serial_number": 1,
+        "original_text": "hello",
+        "translated_text": "こんにちは",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 2,
+        "original_text": "Hello",
+        "translated_text": "もしもし",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 3,
+        "original_text": "How are you?",
+        "translated_text": "お元気ですか?",
+        "token_count": 36,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 4,
+        "original_text": "Hello",
+        "translated_text": "सलाम",
+        "token_count": 15,
+        "language": "Hindi"
+    },
+    {
+        "serial_number": 5,
+        "original_text": "hello",
+        "translated_text": "こんにちは",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 6,
+        "original_text": "hello",
+        "translated_text": "सलाम",
+        "token_count": 15,
+        "language": "Hindi"
+    }
+]

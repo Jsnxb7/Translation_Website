@@ -17,8 +17,13 @@
 		Choose your Language
 	</h1>
 	</i>
-        <a href="{{ url_for('Japanese', name=name, post=post, collectionname=collectionname) }}"><button class="square-button">Japanese</button></a>
-        <a href="{{ url_for('Hindi', name=name, post=post, collectionname=collectionname) }}"><button class="square-button" >Hindi</button></a>
+       <a href="{{ url_for('Japanese', name=name, post=post, unique_id=unique_id) }}">
+    <button class="square-button">Japanese</button>
+</a>
+
+<a href="{{ url_for('Hindi', name=name, post=post, unique_id=unique_id) }}">
+    <button class="square-button">Hindi</button>
+</a>
     </div>
 </body>
 </html>

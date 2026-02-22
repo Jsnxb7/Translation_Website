@@ -31,10 +31,16 @@
             </div>
         </div>
 
-        <button onclick="window.location.href='/'">
-            <img src="{{ url_for('Hindi', name=name, post=post, collectionname=collectionname) }}" />Text
-        </button>
-              <button><img src="static/img/usg.png" />Image</button>
+<a href="{{ url_for('Hindi', name=name, post=post, unique_id=unique_id) }}">
+    <button>
+        <img src="{{ url_for('static', filename='img/usg.png') }}" />
+        Text (Hindi)
+    </button>
+</a>
+<button onclick="window.location.href='/image_hi?name={{name}}&post={{post}}'">
+    <img src="{{ url_for('static', filename='img/usg.png') }}" />
+    Image (Hindi)
+</button>
 
 
         <button class="active">
@@ -59,7 +65,7 @@
 
         <div class="nlp-item">
             <span class="label">🎤 Speech Input</span>
-            <span class="value" id="mode-speech">OFF</span>
+            <span class="value" id="mode-speech">ON</span>
         </div>
 
         <div class="nlp-item">
@@ -91,6 +97,13 @@
 
 
 <script>
+    function goToImage() {
+    const name = "{{ name }}";
+    const post = "{{ post }}";
+
+    window.location.href = `/image?name=${encodeURIComponent(name)}&post=${encodeURIComponent(post)}`;
+}
+
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
@@ -143,21 +156,19 @@ async function toggleRecording() {
             document.getElementById("mode-pipeline").innerText = "Translating";
 
             const translateResponse = await fetch("/translathi", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: "{{ name }}",
-                    post: "{{ post }}",
-                    text: result.transcription
-                })
-            });
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: result.transcription
+    })
+});
 
-            const translated = await translateResponse.json();
+const translated = await translateResponse.json();
 
-            addMessage("assistant", translated.translated_text);
+addMessage("assistant", translated.translated_text);
 
-            document.getElementById("mode-pipeline").innerText = "Complete";
-            document.getElementById("mode-speech").innerText = "OFF";
+document.getElementById("mode-pipeline").innerText = "Complete";
+document.getElementById("mode-speech").innerText = "OFF";
         };
     }
 }

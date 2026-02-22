@@ -1,134 +1,162 @@
 function showMessageBubble() {
     const bubblemsg = document.getElementById('message-bubble');
-    bubblemsg.classList.add('message-bubble-visible');
+    if (bubblemsg) {
+        bubblemsg.classList.add('message-bubble-visible');
     }
-    
-    function setPipelineStatus(status) {
-  document.getElementById("mode-pipeline").innerText = status;
+}
+
+function setPipelineStatus(status) {
+    const pipeline = document.getElementById("mode-pipeline");
+    if (pipeline) {
+        pipeline.innerText = status;
+    }
 }
 
 function translat() {
-    setPipelineStatus("Processing...");
 
-    const text = document.getElementById('message-input').value.trim();
-    const name = document.getElementById('name').value;
-    const post = document.getElementById('post').value;
+    const textInput = document.getElementById('message-input');
     const chatArea = document.getElementById('chat-area');
+    const unique_id = document.getElementById('unique_id')?.value;
+if (!textInput || !chatArea) return;
 
+    const text = textInput.value.trim();
     if (text === '') return;
 
-    // Create user message bubble
+    setPipelineStatus("Processing...");
+
+    /* ---------- USER MESSAGE ---------- */
+
     const userMessageElement = document.createElement('div');
     userMessageElement.className = 'msg user';
     userMessageElement.textContent = text;
     chatArea.appendChild(userMessageElement);
     chatArea.scrollTop = chatArea.scrollHeight;
 
-    // Clear the input field
-    document.getElementById('message-input').value = '';
+    textInput.value = '';
 
-    // Send message to server
+    /* ---------- SEND TO SERVER ---------- */
+
     fetch('/translathi', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text: text, name: name, post: post })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            text: text,
+        })
     })
     .then(response => response.json())
     .then(data => {
+
+        const translatedText = data.translated_text || 'Translation error.';
+
+        /* ---------- ASSISTANT MESSAGE ---------- */
+
+        const translatedMessageElement = document.createElement('div');
+        translatedMessageElement.className = 'msg assistant';
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = translatedText;
+        translatedMessageElement.appendChild(textSpan);
+
+        chatArea.appendChild(translatedMessageElement);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        /* ---------- TEXT TO SPEECH ---------- */
+
         if (data.serial_number) {
-            // Get audio from /speechhi
+
             fetch('/speechhi', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     serial_number: data.serial_number,
-                    name: name,
-                    post: post
+                    unique_id: unique_id
                 })
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.audio_url) {
-                    // Create audio player with mute/unmute
-                    const audioDiv = document.createElement('div');
-                    const audio = new Audio(data.audio_url);
-                    audio.controls = false;
+            .then(audioData => {
 
+                if (audioData.audio_url) {
+
+                    const audio = new Audio(audioData.audio_url);
                     const playPauseButton = document.createElement('button');
                     playPauseButton.className = 'audio-control';
-                    playPauseButton.innerHTML = "<img src='static/img/unmute.jpeg' alt='Pause'>";
+                    playPauseButton.innerHTML = "🔊";
+
                     let isPlaying = false;
 
                     playPauseButton.addEventListener('click', function () {
                         if (!isPlaying) {
                             audio.play();
-                            playPauseButton.innerHTML = "<img src='static/img/unmute.jpeg' alt='Pause'>";
+                            playPauseButton.innerHTML = "⏸";
                             isPlaying = true;
                         } else {
                             audio.pause();
-                            playPauseButton.innerHTML = "<img src='static/img/muted.jpeg' alt='Play'>";
+                            playPauseButton.innerHTML = "🔊";
                             isPlaying = false;
                         }
                     });
 
-                    audio.addEventListener('play', () => {
-                        playPauseButton.innerHTML = "<img src='static/img/unmute.jpeg' alt='Pause'>";
-                        isPlaying = true;
-                    });
-
-                    audio.addEventListener('pause', () => {
-                        playPauseButton.innerHTML = "<img src='static/img/muted.jpeg' alt='Play'>";
+                    audio.addEventListener('ended', () => {
+                        playPauseButton.innerHTML = "🔊";
                         isPlaying = false;
                     });
 
-                    audioDiv.className = 'audio-controls';
-                    audioDiv.appendChild(playPauseButton);
-                    audioDiv.appendChild(audio);
-                    chatArea.appendChild(audioDiv);
+                    translatedMessageElement.appendChild(playPauseButton);
                 }
             });
         }
 
-        // Show translated assistant message
-        const translatedText = data.translated_text || 'Translation error.';
-        const translatedMessageElement = document.createElement('div');
-        translatedMessageElement.className = 'msg assistant';
-        translatedMessageElement.textContent = translatedText;
-        chatArea.appendChild(translatedMessageElement);
-        chatArea.scrollTop = chatArea.scrollHeight;
-        setTimeout(() => {
-    setPipelineStatus("Idle");
-  }, 1200);
+        setPipelineStatus("Idle");
+    })
+    .catch(error => {
+        console.error("Translation error:", error);
+        setPipelineStatus("Error");
     });
 }
 
+/* ---------- Optional UI Utilities ---------- */
+
 function transparent() {
-const bubblemsg = document.getElementById('message-bubble');
-bubblemsg.classList.remove('message-bubble-visible');
-}
-function moveMessages() {
-const bubblemsg = document.getElementById('message-bubble');
-const chatMessages = document.getElementById('chat-messages');
-// Move all messages from bubblemsg to chatMessages
-while (bubblemsg.firstChild) {
-    chatMessages.appendChild(bubblemsg.firstChild);
-}
-transparent();
-}
-function showchat() {
-document.getElementById('show').addEventListener('click', function() {
-const chatContainer = document.getElementById('chat-container');
-chatContainer.classList.toggle('chat-container-visible');
-});
+    const bubblemsg = document.getElementById('message-bubble');
+    if (bubblemsg) {
+        bubblemsg.classList.remove('message-bubble-visible');
+    }
 }
 
-document.getElementById('next').addEventListener('click', moveMessages);
+function moveMessages() {
+    const bubblemsg = document.getElementById('message-bubble');
+    const chatMessages = document.getElementById('chat-messages');
+
+    if (!bubblemsg || !chatMessages) return;
+
+    while (bubblemsg.firstChild) {
+        chatMessages.appendChild(bubblemsg.firstChild);
+    }
+
+    transparent();
+}
+
+function showchat() {
+    const showBtn = document.getElementById('show');
+    const chatContainer = document.getElementById('chat-container');
+
+    if (!showBtn || !chatContainer) return;
+
+    showBtn.addEventListener('click', function() {
+        chatContainer.classList.toggle('chat-container-visible');
+    });
+}
+
+const nextBtn = document.getElementById('next');
+if (nextBtn) {
+    nextBtn.addEventListener('click', moveMessages);
+}
+
+/* ---------- Model Viewer Safety ---------- */
 
 const myModelViewer = document.getElementById('myModelViewer');
-myModelViewer.cameraOrbit = '0deg 90deg 2m';
-myModelViewer.cameraTarget = '20m 59m 700m';
-myModelViewer.cameraFov = '60deg';
+if (myModelViewer) {
+    myModelViewer.cameraOrbit = '0deg 90deg 2m';
+    myModelViewer.cameraTarget = '20m 59m 700m';
+    myModelViewer.cameraFov = '60deg';
+}

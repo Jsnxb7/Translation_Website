@@ -352,16 +352,23 @@ body {
   left: 163px;
 }
 .chat-container {
-  position: absolute;
-  bottom: 30px; 
-  left: 1000px;
-  width: 300px; /* Adjust width as needed */
+  position: fixed;          /* Better than absolute for chat */
+  bottom: 30px;
+  right: 50px;              /* Match side spacing like chat-area margin */
+  
+  width: 500px;             /* Match #chat-area width */
+  max-height: 70vh;         /* Same scroll rule */
+  
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+  overflow-y: auto;         /* Enable scrolling */
+  box-sizing: border-box;
+
   display: none;
 }
+
 .chat-container-visible {
   display: block; /* Visible when this class is added */
 }
@@ -555,10 +562,173 @@ body {
     /* Chat container that holds messages */
 #chat-area {
   max-width: 500px;
-  margin: 0 50px;
-  padding: 100px 20px 120px; /* space for header + input bar */
-  min-height: 80vh;
+  margin: 50px;
+  top: 20%;
+  padding: 100px 20px 120px;
+  height: 70vh;              /* Fixed height */
+  overflow-y: auto;          /* Enable vertical scroll */
   box-sizing: border-box;
+}
+.msg.assistant {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.audio-control {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Works in Chrome, Edge, Safari */
+#chat-area::-webkit-scrollbar,
+.chat-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chat-area::-webkit-scrollbar-track,
+.chat-container::-webkit-scrollbar-track {
+  background: #111; /* Dark track */
+  border-radius: 10px;
+}
+
+#chat-area::-webkit-scrollbar-thumb,
+.chat-container::-webkit-scrollbar-thumb {
+  background: #444; /* Scroll handle */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+#chat-area::-webkit-scrollbar-thumb:hover,
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background: #666; /* Lighter on hover */
+}
+.image-btn-wrapper {
+    position: relative;
+    bottom: 40px;
+    left: 250px;
+}
+
+/* Main Button */
+.image-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    font-size: 28px;
+    border: none;
+    background: #6c63ff;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    transition: 0.3s ease;
+}
+
+.image-btn:hover {
+    transform: scale(1.08);
+}
+
+.image-btn.active {
+    transform: rotate(45deg) scale(1.05);
+}
+/* Dropdown */
+.image-options {
+    position: absolute;
+    bottom: 90px;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    opacity: 0;
+    transform: translateY(15px) scale(0.95);
+    visibility: hidden;
+
+    transition: 
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s;
+}
+
+/* When active */
+.image-options.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+}
+
+.image-options button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #2a2a40;
+    color: white;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.image-options button:hover {
+    background: #6c63ff;
+}
+
+/* Camera Modal */
+.camera-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.camera-content {
+    background: #1e1e2f;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.camera-content video {
+    width: 400px;
+    border-radius: 10px;
+}
+
+.camera-controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.camera-controls button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #6c63ff;
+    color: white;
+    cursor: pointer;
+}
+
+/* Image Preview */
+.image-preview-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.image-preview-modal img {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 15px;
 }
 
 /* Each individual message */
