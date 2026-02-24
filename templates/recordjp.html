@@ -47,7 +47,12 @@
             <img src="{{ url_for('static', filename='img/dash.png') }}" />
             Speech
         </button>
-
+<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Language Select
+  </button>
+</a>
     </div>
 </div>
 
@@ -60,7 +65,7 @@
 
         <div class="nlp-item">
             <span class="label">🌐 Translation</span>
-            <span class="value">EN → JP</span>
+            <span class="value">JA → EN</span>
         </div>
 
         <div class="nlp-item">
@@ -144,7 +149,7 @@ async function toggleRecording() {
             const formData = new FormData();
             formData.append("audio", blob);
 
-const response = await fetch("/upload_audio", {
+const response = await fetch("/upload_audio_ja", {
     method: "POST",
     body: formData
 });
@@ -168,23 +173,22 @@ if (!result.transcription) {
 }
 
 addMessage("user", result.transcription);
+document.getElementById("mode-pipeline").innerText = "Translating";
 
-            document.getElementById("mode-pipeline").innerText = "Translating";
-
-const translateResponse = await fetch("{{ url_for('translatjp') }}", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
+const translateResponse = await fetch("{{ url_for('translate_ja_en') }}", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
         text: result.transcription
     })
-            });
+});
 
-            const translated = await translateResponse.json();
+const translated = await translateResponse.json();
 
-            addMessage("assistant", translated.translated_text);
+addMessage("assistant", translated.translated_text);
 
-            document.getElementById("mode-pipeline").innerText = "Complete";
-            document.getElementById("mode-speech").innerText = "OFF";
+document.getElementById("mode-pipeline").innerText = "Complete";
+document.getElementById("mode-speech").innerText = "OFF";
         };
     }
 }

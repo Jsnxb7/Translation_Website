@@ -47,7 +47,12 @@
             <img src="{{ url_for('static', filename='img/dash.png') }}" />
             Speech
         </button>
-
+<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Language Select
+  </button>
+</a>
     </div>
 </div>
 
@@ -60,7 +65,7 @@
 
         <div class="nlp-item">
             <span class="label">🌐 Translation</span>
-            <span class="value">EN → HI</span>
+            <span class="value">HI → EN</span>
         </div>
 
         <div class="nlp-item">
@@ -144,7 +149,7 @@ async function toggleRecording() {
             const formData = new FormData();
             formData.append("audio", blob);
 
-            const response = await fetch("/upload_audio", {
+            const response = await fetch("/upload_audio_hi", {
                 method: "POST",
                 body: formData
             });
@@ -155,7 +160,7 @@ async function toggleRecording() {
 
             document.getElementById("mode-pipeline").innerText = "Translating";
 
-            const translateResponse = await fetch("/translathi", {
+const translateResponse = await fetch("/translate_hi_en", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -31,20 +31,27 @@
             </div>
         </div>
 
-<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+<a href="{{ url_for('Hindi', name=name, post=post, unique_id=unique_id) }}">
     <button>
-        <img src="{{ url_for('static', filename='img/dash.png') }}" />
-        Text
+        <img src="{{ url_for('static', filename='img/usg.png') }}" />
+        Text (Hindi)
     </button>
 </a>
               <button><img src="static/img/usg.png" />Image</button>
 
 
-        <button class="active">
-            <img src="{{ url_for('static', filename='img/dash.png') }}" />
-            Speech
-        </button>
-
+<a href="{{ url_for('recordhi', name=name, post=post) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Speech
+  </button>
+</a>
+<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Language Select
+  </button>
+</a>
     </div>
 </div>
 
@@ -57,7 +64,7 @@
 
         <div class="nlp-item">
             <span class="label">🌐 Translation</span>
-            <span class="value">EN → HI/JP</span>
+            <span class="value">HI → EN</span>
         </div>
 
         <div class="nlp-item">
@@ -113,6 +120,14 @@
 
 
 <script>
+    function goToRecord() {
+  const name = document.getElementById("name").value;
+  const post = document.getElementById("post").value;
+  const unique_id = document.getElementById("unique_id").value;
+
+  window.location.href =
+    `/recordhi?name=${encodeURIComponent(name)}&post=${encodeURIComponent(post)}&unique_id=${encodeURIComponent(unique_id)}`;
+}
     function showCameraModal(stream) {
     const modal = document.getElementById("cameraModal");
     const video = document.getElementById("cameraVideo");
@@ -253,12 +268,36 @@ async function addImageMessage(role, imageSrc) {
     const result = await response.json();
 
     // Update OCR text
-    ocrText.innerText = "🔎 OCR Text: " + result.ocr_text;
+// Update OCR text
+// Show OCR text
+ocrText.innerText = "🔎 OCR Text: " + result.ocr_text;
 
-    // Update language display
-    document.querySelector(".nlp-item .value").innerText = "HI";
+document.getElementById("mode-pipeline").innerText = "Translating";
 
-    document.getElementById("mode-pipeline").innerText = "Complete";
+// 🔥 Call HI → EN translation route
+const translateResponse = await fetch("/translate_hi_en", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: result.ocr_text
+    })
+});
+
+const translated = await translateResponse.json();
+
+// Create translation div
+const translationDiv = document.createElement("div");
+translationDiv.style.marginTop = "6px";
+translationDiv.style.fontSize = "14px";
+translationDiv.style.color = "#00ffcc";
+translationDiv.innerText = "🌐 English: " + translated.translated_text;
+
+div.appendChild(translationDiv);
+
+// Update NLP display
+document.querySelector(".nlp-item .value").innerText = "HI → EN";
+
+document.getElementById("mode-pipeline").innerText = "Complete";
 }
 
 </script>

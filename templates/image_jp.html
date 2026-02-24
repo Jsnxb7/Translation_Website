@@ -30,20 +30,27 @@
                 <img class="network" src="{{ url_for('static', filename='img/logo.png') }}" />
             </div>
         </div>
-<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+<a href="{{ url_for('Japanese', name=name, post=post, unique_id=unique_id) }}">
     <button>
-        <img src="{{ url_for('static', filename='img/dash.png') }}" />
-        Text
+        <img src="{{ url_for('static', filename='img/usg.png') }}" />
+        Text (Japanese)
     </button>
 </a>
               <button><img src="static/img/usg.png" />Image</button>
 
 
-        <button class="active">
-            <img src="{{ url_for('static', filename='img/dash.png') }}" />
-            Speech
-        </button>
-
+<a href="{{ url_for('recordjp', name=name, post=post) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Speech
+  </button>
+</a>
+<a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+        Language Select
+  </button>
+</a>
     </div>
 </div>
 
@@ -56,7 +63,7 @@
 
         <div class="nlp-item">
             <span class="label">🌐 Translation</span>
-            <span class="value">EN → HI/JP</span>
+            <span class="value">JA → EN</span>
         </div>
 
         <div class="nlp-item">
@@ -252,12 +259,35 @@ async function addImageMessage(role, imageSrc) {
     const result = await response.json();
 
     // Update OCR text
-    ocrText.innerText = "🔎 OCR Text: " + result.ocr_text;
+// Show OCR text
+ocrText.innerText = "🔎 OCR Text: " + result.ocr_text;
 
-    // Update language display
-    document.querySelector(".nlp-item .value").innerText = "JP";
+document.getElementById("mode-pipeline").innerText = "Translating";
 
-    document.getElementById("mode-pipeline").innerText = "Complete";
+// 🔥 Call JA → EN route
+const translateResponse = await fetch("/translate_ja_en", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: result.ocr_text
+    })
+});
+
+const translated = await translateResponse.json();
+
+// Create translation element
+const translationDiv = document.createElement("div");
+translationDiv.style.marginTop = "6px";
+translationDiv.style.fontSize = "14px";
+translationDiv.style.color = "#00ffcc";
+translationDiv.innerText = "🌐 English: " + translated.translated_text;
+
+div.appendChild(translationDiv);
+
+// Update translation label
+document.querySelector(".nlp-item .value").innerText = "JA → EN";
+
+document.getElementById("mode-pipeline").innerText = "Complete";
 }
 
 </script>

@@ -40,5 +40,152 @@
         "translated_text": "सलाम",
         "token_count": 15,
         "language": "Hindi"
+    },
+    {
+        "serial_number": 7,
+        "original_text": "hello",
+        "translated_text": "こんにちは",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 8,
+        "original_text": "こんにちは",
+        "translated_text": "Hello.",
+        "token_count": 15,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 9,
+        "original_text": "コンニチ",
+        "translated_text": "Conicchi.",
+        "token_count": 12,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 10,
+        "original_text": "ブーン",
+        "translated_text": "Boone.",
+        "token_count": 9,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 11,
+        "original_text": "はじめまして",
+        "translated_text": "Nice to meet you.",
+        "token_count": 18,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 12,
+        "original_text": "コンニチボン",
+        "translated_text": "Coniciobon",
+        "token_count": 18,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 13,
+        "original_text": "おにちわ",
+        "translated_text": "Hello.",
+        "token_count": 12,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 14,
+        "original_text": "hello",
+        "translated_text": "सलाम",
+        "token_count": 15,
+        "language": "Hindi"
+    },
+    {
+        "serial_number": 15,
+        "original_text": "नमस्ते",
+        "translated_text": "Hello.",
+        "token_count": 18,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 16,
+        "original_text": "Namaste",
+        "translated_text": "Nemstrogen",
+        "token_count": 21,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 17,
+        "original_text": "up guessing",
+        "translated_text": "- What's going on?",
+        "token_count": 33,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 18,
+        "original_text": "کیا چل رہا ہے",
+        "translated_text": "[ Credit Line]",
+        "token_count": 39,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 19,
+        "original_text": "Namaste",
+        "translated_text": "Nemstrogen",
+        "token_count": 21,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 20,
+        "original_text": "नमस्ते",
+        "translated_text": "Hello.",
+        "token_count": 18,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 21,
+        "original_text": "Namaskar",
+        "translated_text": "Duskar",
+        "token_count": 24,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 22,
+        "original_text": "کیا چل رہے?",
+        "translated_text": "What do you think? . . . . . . . . . . . . . .",
+        "token_count": 33,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 23,
+        "original_text": "नमस्ते",
+        "translated_text": "Hello.",
+        "token_count": 18,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 24,
+        "original_text": "आप कैसे",
+        "translated_text": "How did you do that?",
+        "token_count": 21,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 25,
+        "original_text": "आप कैसे हूं",
+        "translated_text": "How do you know?",
+        "token_count": 33,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 26,
+        "original_text": "आप कैसे हुई",
+        "translated_text": "How did you do that?",
+        "token_count": 33,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 27,
+        "original_text": "मैं ठीक हूं",
+        "translated_text": "I'm fine.",
+        "token_count": 33,
+        "language": "Hindi → English"
     }
 ]

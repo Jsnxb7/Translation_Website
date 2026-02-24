@@ -53,6 +53,12 @@
       <img src="{{ url_for('static', filename='img/dash.png') }}" />
       Speech
     </button>
+    <a href="{{ url_for('landing', name=name, post=post, unique_id=unique_id) }}">
+  <button>
+    <img src="{{ url_for('static', filename='img/dash.png') }}" />
+    Language Select
+  </button>
+</a>
   </div>
 </div>
 

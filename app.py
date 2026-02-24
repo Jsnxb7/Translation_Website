@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect, url_for
 from gtts import gTTS
 import time
-from pymongo import MongoClient
 import os
 import matplotlib
 matplotlib.use('Agg')
@@ -13,7 +12,10 @@ from faster_whisper import WhisperModel
 import easyocr
 import numpy as np
 from PIL import Image
-from langdetect import detect
+from vosk import Model, KaldiRecognizer
+import wave
+import json
+import subprocess
 import json
 import uuid
 from flask import session
@@ -68,6 +70,7 @@ def write_users(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+vosk_model = Model("models/vosk-model-small-hi-0.22")
 reader_hi = easyocr.Reader(['en', 'hi'])
 reader_ja = easyocr.Reader(['ja', 'en'])
 
@@ -236,34 +239,81 @@ def recordjp():
     post = request.args.get('post')
     return render_template('recordjp.html', name=name, post=post)
 
-@app.route('/upload_audio', methods=['POST'])
-def upload_audio():
+@app.route('/upload_audio_hi', methods=['POST'])
+def upload_audio_hi():
+
     if 'audio' not in request.files:
         return jsonify({'error': 'No audio file'}), 403
 
     audio_file = request.files['audio']
+    input_path = os.path.join("static", "input_hi.webm")
+    output_path = os.path.join("static", "input_hi.wav")
 
-    save_path = os.path.join("static", "input.wav")
+    audio_file.save(input_path)
+
+    # 🔥 Convert to 16kHz mono WAV
+    subprocess.run([
+        "ffmpeg", "-y",
+        "-i", input_path,
+        "-ar", "16000",
+        "-ac", "1",
+        output_path
+    ])
+
+    wf = wave.open(output_path, "rb")
+
+    if wf.getframerate() != 16000:
+        return jsonify({"error": "Audio must be 16kHz"}), 400
+
+    rec = KaldiRecognizer(vosk_model, 16000)
+
+    full_text = ""
+
+    while True:
+        data = wf.readframes(4000)
+        if len(data) == 0:
+            break
+        if rec.AcceptWaveform(data):
+            result = json.loads(rec.Result())
+            full_text += result.get("text", "") + " "
+
+    # Get final partial result
+    final_result = json.loads(rec.FinalResult())
+    full_text += final_result.get("text", "")
+
+    print("Vosk Hindi Transcription:", full_text)
+
+    return jsonify({
+        "transcription": full_text.strip(),
+        "language": "hi"
+    }), 200
+
+@app.route('/upload_audio_ja', methods=['POST'])
+def upload_audio_ja():
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file'}), 403
+
+    audio_file = request.files['audio']
+    save_path = os.path.join("static", "input_ja.wav")
     audio_file.save(save_path)
 
-    print("Audio saved at:", save_path)
+    print("Japanese audio saved at:", save_path)
 
-    # 🔥 Transcribe using Faster Whisper
     segments, info = whisper_model.transcribe(
         save_path,
-        beam_size=5
+        beam_size=5,
+        language="ja" 
     )
 
     full_text = ""
     for segment in segments:
         full_text += segment.text + " "
 
-    print("Detected language:", info.language)
-    print("Transcription:", full_text)
+    print("Transcription (JA):", full_text)
 
     return jsonify({
         "transcription": full_text.strip(),
-        "language": info.language
+        "language": "ja"
     }), 200
 
 @app.route('/signup')
@@ -458,6 +508,148 @@ def speechhi():
     tts.save(audio_filename)
 
     return jsonify(audio_url=f'/{audio_filename}'), 203
+
+ja_en_model_name = "Helsinki-NLP/opus-mt-ja-en"
+
+tokenizer_ja_en = AutoTokenizer.from_pretrained(ja_en_model_name)
+model_ja_en = AutoModelForSeq2SeqLM.from_pretrained(ja_en_model_name)
+
+def translat_ja_en(text):
+    try:
+        if not text:
+            return "No input text provided."
+
+        inputs = tokenizer_ja_en(
+            text,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=512
+        )
+
+        with torch.no_grad():
+            translated_tokens = model_ja_en.generate(
+                **inputs,
+                max_length=512
+            )
+
+        translated_text = tokenizer_ja_en.batch_decode(
+            translated_tokens,
+            skip_special_tokens=True
+        )
+
+        return translated_text[0]
+
+    except Exception as e:
+        print("JA→EN Translation error:", str(e))
+        return "Translation failed."
+    
+@app.route('/translate_ja_en', methods=['POST'])
+def translate_ja_en():
+
+    data = request.get_json()
+    unique_id = session.get('unique_id')
+    tex = data.get('text')
+
+    if not unique_id or not tex:
+        return jsonify({'error': 'Missing data'}), 412
+
+    translation = translat_ja_en(tex)
+    token_count = len(tex) * 3
+
+    chats = read_chat_data(unique_id)
+    serial_number = len(chats) + 1
+
+    output_data = {
+        "serial_number": serial_number,
+        "original_text": tex,
+        "translated_text": translation,
+        "token_count": token_count,
+        "language": "Japanese → English"
+    }
+
+    chats.append(output_data)
+    write_chat_data(unique_id, chats)
+
+    total_token_count = sum(c['token_count'] for c in chats)
+
+    return jsonify({
+        "serial_number": serial_number,
+        "translated_text": translation,
+        "token_count": token_count,
+        "total_token_count": total_token_count
+    }), 200
+
+hi_en_model_name = "Helsinki-NLP/opus-mt-hi-en"
+
+tokenizer_hi_en = AutoTokenizer.from_pretrained(hi_en_model_name)
+model_hi_en = AutoModelForSeq2SeqLM.from_pretrained(hi_en_model_name)
+
+def translat_hi_en(text):
+    try:
+        if not text:
+            return "No input text provided."
+
+        inputs = tokenizer_hi_en(
+            text,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=512
+        )
+
+        with torch.no_grad():
+            translated_tokens = model_hi_en.generate(
+                **inputs,
+                max_length=512
+            )
+
+        translated_text = tokenizer_hi_en.batch_decode(
+            translated_tokens,
+            skip_special_tokens=True
+        )
+
+        return translated_text[0]
+
+    except Exception as e:
+        print("HI→EN Translation error:", str(e))
+        return "Translation failed."
+    
+@app.route('/translate_hi_en', methods=['POST'])
+def translate_hi_en():
+
+    data = request.get_json()
+    unique_id = session.get('unique_id')
+    tex = data.get('text')
+
+    if not unique_id or not tex:
+        return jsonify({'error': 'Missing data'}), 413
+
+    translation = translat_hi_en(tex)
+    token_count = len(tex) * 3
+
+    chats = read_chat_data(unique_id)
+    serial_number = len(chats) + 1
+
+    output_data = {
+        "serial_number": serial_number,
+        "original_text": tex,
+        "translated_text": translation,
+        "token_count": token_count,
+        "language": "Hindi → English"
+    }
+
+    chats.append(output_data)
+    write_chat_data(unique_id, chats)
+
+    total_token_count = sum(c['token_count'] for c in chats)
+
+    return jsonify({
+        "serial_number": serial_number,
+        "translated_text": translation,
+        "token_count": token_count,
+        "total_token_count": total_token_count
+    }), 200
 
 @app.route('/output/<filename>')
 def serve_audio(filename):
