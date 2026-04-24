@@ -1,3 +1,56 @@
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+  document.getElementById("main-content").classList.toggle("collapsed");
+}
+
+/* ---------- Navigation With unique_id ---------- */
+
+function goToImage() {
+  const name = document.getElementById("name").value;
+  const post = document.getElementById("post").value;
+  const unique_id = document.getElementById("unique_id").value;
+
+  window.location.href =
+    `/image_hi?name=${encodeURIComponent(name)}&post=${encodeURIComponent(post)}&unique_id=${encodeURIComponent(unique_id)}`;
+}
+
+function goToRecord() {
+  const name = document.getElementById("name").value;
+  const post = document.getElementById("post").value;
+  const unique_id = document.getElementById("unique_id").value;
+
+  window.location.href =
+    `/recordhi?name=${encodeURIComponent(name)}&post=${encodeURIComponent(post)}&unique_id=${encodeURIComponent(unique_id)}`;
+}
+
+/* ---------- Profile Dropdown ---------- */
+
+document.addEventListener('DOMContentLoaded', function () {
+  const button = document.getElementById('profilebutton');
+  const dropdown = document.querySelector('.dropdown-menu');
+
+  button.addEventListener('mouseenter', () => dropdown.style.display = 'block');
+  button.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+      if (!dropdown.matches(':hover')) {
+        dropdown.style.display = 'none';
+      }
+    }, 200);
+  });
+
+  dropdown.addEventListener('mouseenter', () => dropdown.style.display = 'block');
+  dropdown.addEventListener('mouseleave', () => dropdown.style.display = 'none');
+});
+
+/* ---------- Service Worker ---------- */
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/static/sw.js")
+    .then(() => console.log("Service Worker Registered"));
+}
+
+
 function showMessageBubble() {
     const bubblemsg = document.getElementById('message-bubble');
     if (bubblemsg) {
@@ -12,7 +65,7 @@ function setPipelineStatus(status) {
     }
 }
 
-function translat() {
+function translathi() {
 
     const textInput = document.getElementById('message-input');
     const chatArea = document.getElementById('chat-area');

@@ -187,5 +187,19 @@
         "translated_text": "I'm fine.",
         "token_count": 33,
         "language": "Hindi → English"
+    },
+    {
+        "serial_number": 28,
+        "original_text": "hello",
+        "translated_text": "こんにちは",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 29,
+        "original_text": "hello",
+        "translated_text": "सलाम",
+        "token_count": 15,
+        "language": "Hindi"
     }
 ]

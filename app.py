@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_file, redirect, url_for
+from flask import Flask, request, jsonify, render_template, send_file, redirect, url_for, session
 from gtts import gTTS
 import time
 import os
@@ -16,9 +16,7 @@ from vosk import Model, KaldiRecognizer
 import wave
 import json
 import subprocess
-import json
 import uuid
-from flask import session
 
 app = Flask(__name__)
 
@@ -28,6 +26,7 @@ CHAT_FOLDER = "chat_data"
 
 if not os.path.exists(CHAT_FOLDER):
     os.makedirs(CHAT_FOLDER)
+    
 def get_chat_file_path(unique_id):
     return os.path.join(CHAT_FOLDER, f"user_{unique_id}.json")
 
@@ -374,7 +373,6 @@ def translatjp():
         "total_token_count": total_token_count
     }), 200
 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 
 # Load smaller EN→HI model
@@ -730,6 +728,6 @@ def clean_up():
 
 if __name__ == '__main__':
     try:
-        app.run(host='127.0.0.1', port=5000)
+        app.run(host='127.0.0.1', port=7860)
     finally:
         clean_up()
