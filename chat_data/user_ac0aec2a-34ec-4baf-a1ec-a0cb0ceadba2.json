@@ -201,5 +201,110 @@
         "translated_text": "सलाम",
         "token_count": 15,
         "language": "Hindi"
+    },
+    {
+        "serial_number": 30,
+        "original_text": "hello",
+        "translated_text": "こんにちは",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 31,
+        "original_text": "hello",
+        "translated_text": "はい",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 32,
+        "original_text": "how are you",
+        "translated_text": "どう? 。 ? 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜 〜",
+        "token_count": 33,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 33,
+        "original_text": "father",
+        "translated_text": "旦那... 〜 〜..................................................................................................................................................................................................................................................................................................................................................................................................................",
+        "token_count": 18,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 34,
+        "original_text": "how",
+        "translated_text": "下記のいずれかの操作を行わす",
+        "token_count": 9,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 35,
+        "original_text": "hello",
+        "translated_text": "はい",
+        "token_count": 15,
+        "language": "Japanese"
+    },
+    {
+        "serial_number": 36,
+        "original_text": "hello",
+        "translated_text": "सलाम",
+        "token_count": 15,
+        "language": "Hindi"
+    },
+    {
+        "serial_number": 37,
+        "original_text": "how are you",
+        "translated_text": "आप कैसे हैं",
+        "token_count": 33,
+        "language": "Hindi"
+    },
+    {
+        "serial_number": 38,
+        "original_text": "おはようございます! おはようございます!",
+        "translated_text": "Good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning, good morning,",
+        "token_count": 63,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 39,
+        "original_text": "いろいろ いろいろ",
+        "translated_text": "A lot of things.",
+        "token_count": 27,
+        "language": "Japanese → English"
+    },
+    {
+        "serial_number": 40,
+        "original_text": "हेलो",
+        "translated_text": "Hello.",
+        "token_count": 12,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 41,
+        "original_text": "वायु",
+        "translated_text": "Air",
+        "token_count": 12,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 42,
+        "original_text": "हाउ आर यू",
+        "translated_text": "Haute Ru",
+        "token_count": 27,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 43,
+        "original_text": "आप कैसे हैं",
+        "translated_text": "How You Are",
+        "token_count": 33,
+        "language": "Hindi → English"
+    },
+    {
+        "serial_number": 44,
+        "original_text": "नमस्ते",
+        "translated_text": "Hello.",
+        "token_count": 18,
+        "language": "Hindi → English"
     }
 ]

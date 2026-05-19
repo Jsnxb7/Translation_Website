@@ -319,8 +319,12 @@ def upload_audio_ja():
 def sign_up():
     return render_template('signup.html')
 
-tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-tatoeba-en-ja")
-model = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-tatoeba-en-ja")
+TRANSLATION_REPO = "Azu-nyan/Translation"
+
+en_ja_model_name = TRANSLATION_REPO
+
+tokenizer = AutoTokenizer.from_pretrained(en_ja_model_name, subfolder="en-ja")
+model = AutoModelForSeq2SeqLM.from_pretrained(en_ja_model_name, subfolder="en-ja")
 
 def translatejp(text):
     # Tokenize the input text
@@ -328,10 +332,7 @@ def translatejp(text):
 
     # Generate translated output
     outputs = model.generate(**inputs)
-
-    # Decode the output tokens
     translated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
     print(translated_text)
     return translated_text
 
@@ -375,11 +376,10 @@ def translatjp():
 
 import torch
 
-# Load smaller EN→HI model
-model_name = "Helsinki-NLP/opus-mt-en-hi"
+model_name = TRANSLATION_REPO
 
-tokenizerhi = AutoTokenizer.from_pretrained(model_name)
-modelhi = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+tokenizerhi = AutoTokenizer.from_pretrained(model_name, subfolder="en-hi")
+modelhi = AutoModelForSeq2SeqLM.from_pretrained(model_name, subfolder="en-hi")
 
 def translatehi(text):
     try:
@@ -507,10 +507,10 @@ def speechhi():
 
     return jsonify(audio_url=f'/{audio_filename}'), 203
 
-ja_en_model_name = "Helsinki-NLP/opus-mt-ja-en"
+ja_en_model_name = TRANSLATION_REPO
 
-tokenizer_ja_en = AutoTokenizer.from_pretrained(ja_en_model_name)
-model_ja_en = AutoModelForSeq2SeqLM.from_pretrained(ja_en_model_name)
+tokenizer_ja_en = AutoTokenizer.from_pretrained(ja_en_model_name, subfolder="ja-en")
+model_ja_en = AutoModelForSeq2SeqLM.from_pretrained(ja_en_model_name, subfolder="ja-en")
 
 def translat_ja_en(text):
     try:
@@ -578,10 +578,10 @@ def translate_ja_en():
         "total_token_count": total_token_count
     }), 200
 
-hi_en_model_name = "Helsinki-NLP/opus-mt-hi-en"
+hi_en_model_name = TRANSLATION_REPO
 
-tokenizer_hi_en = AutoTokenizer.from_pretrained(hi_en_model_name)
-model_hi_en = AutoModelForSeq2SeqLM.from_pretrained(hi_en_model_name)
+tokenizer_hi_en = AutoTokenizer.from_pretrained(hi_en_model_name, subfolder="hi-en")
+model_hi_en = AutoModelForSeq2SeqLM.from_pretrained(hi_en_model_name, subfolder="hi-en")
 
 def translat_hi_en(text):
     try:
